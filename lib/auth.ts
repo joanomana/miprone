@@ -73,7 +73,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async jwt({ token, user, trigger, session }) {
-      // Base fields from authConfig
       if (user) {
         token.id = user.id as string
         token.onboardingCompleto =
@@ -100,6 +99,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
       return token
+    },
+
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string
+        session.user.onboardingCompleto = (token.onboardingCompleto as boolean) ?? false
+        session.user.negocioId = (token.negocioId as string | null) ?? null
+      }
+      return session
+    },
+
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith('/')) return `${baseUrl}${url}`
+      if (new URL(url).origin === baseUrl) return url
+      return baseUrl
     },
   },
 })
