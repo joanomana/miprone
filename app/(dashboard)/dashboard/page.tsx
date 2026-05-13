@@ -41,6 +41,9 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   async function fetchDashboard() {
     setLoading(true)
@@ -115,16 +118,16 @@ export default function DashboardPage() {
             Buenos días, {firstName} 👋
           </h2>
           <p className="text-gray-500 text-sm mt-1">
-            {new Date().toLocaleDateString('es-CO', {
+            {mounted ? new Date().toLocaleDateString('es-CO', {
               weekday: 'long',
               year: 'numeric',
               month: 'long',
               day: 'numeric',
-            })}
+            }) : ''}
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {lastUpdated && (
+          {mounted && lastUpdated && (
             <p className="text-xs text-gray-400 hidden sm:block">
               Actualizado {lastUpdated.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
             </p>

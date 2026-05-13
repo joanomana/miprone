@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import { Menu, Bell, ChevronDown, User, LogOut, Settings } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useUIStore } from '@/store/useUIStore'
 import { useAlertasStore } from '@/store/useAlertasStore'
@@ -31,7 +31,12 @@ export default function Header() {
   const toggleSidebar = useUIStore((s) => s.toggleSidebar)
   const alertasNoLeidas = useAlertasStore((s) => s.alertasNoLeidas)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [dateStr, setDateStr] = useState('')
   const router = useRouter()
+
+  useEffect(() => {
+    setDateStr(new Date().toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }))
+  }, [])
 
   const initials = session?.user?.name
     ? session.user.name.split(' ').slice(0, 2).map((n) => n[0]).join('').toUpperCase()
@@ -52,9 +57,7 @@ export default function Header() {
         </button>
         <div>
           <h1 className="text-lg font-semibold text-gray-900 leading-tight">{pageTitle}</h1>
-          <p className="text-xs text-gray-400 hidden sm:block">
-            {new Date().toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-          </p>
+          <p className="text-xs text-gray-400 hidden sm:block">{dateStr}</p>
         </div>
       </div>
 
