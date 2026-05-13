@@ -5,8 +5,10 @@ import bcrypt from 'bcryptjs'
 import connectDB from '@/lib/mongodb'
 import Usuario from '@/models/Usuario'
 import { loginSchema } from '@/lib/validations/usuario'
+import { authConfig } from '@/lib/auth.config'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -71,6 +73,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async jwt({ token, user, trigger, session }) {
+      // Base fields from authConfig
       if (user) {
         token.id = user.id as string
         token.onboardingCompleto =
@@ -78,16 +81,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.negocioId =
           (user as { negocioId?: string | null }).negocioId ?? null
       }
-
       if (trigger === 'update' && session) {
-        if (session.onboardingCompleto !== undefined) {
-          token.onboardingCompleto = session.onboardingCompleto
-        }
-        if (session.negocioId !== undefined) {
-          token.negocioId = session.negocioId
-        }
+        if (session.onboardingCompleto !== undefined) token.onboardingCompleto = session.onboardingCompleto
+        if (session.negocioId !== undefined) token.negocioId = session.negocioId
       }
-
+      // DB fallback for Google OAuth tokens missing id
       if (token.email && token.id === undefined) {
         try {
           await connectDB()
@@ -101,33 +99,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           // ignore DB errors in token refresh
         }
       }
-
       return token
     },
-
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string
-        session.user.onboardingCompleto = (token.onboardingCompleto as boolean) ?? false
-        session.user.negocioId = (token.negocioId as string | null) ?? null
-      }
-      return session
-    },
-
-    async redirect({ url, baseUrl }) {
-      if (url.startsWith('/')) return `${baseUrl}${url}`
-      if (new URL(url).origin === baseUrl) return url
-      return baseUrl
-    },
-  },
-
-  pages: {
-    signIn: '/login',
-    error: '/login',
-  },
-
-  session: {
-    strategy: 'jwt',
   },
 })
 
