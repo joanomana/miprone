@@ -2,9 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================
+   VARIABLES CSS - TEMA MIPRONE
+   ============================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f9fafb;
+  --foreground: #111827;
+  --color-primary: #16a34a;
+  --color-primary-light: #22c55e;
+  --color-primary-dark: #15803d;
+  --color-primary-50: #f0fdf4;
+  --color-primary-100: #dcfce7;
+  --color-primary-200: #bbf7d0;
+  --color-sidebar: #1a2e1a;
+  --color-sidebar-text: rgba(255, 255, 255, 0.65);
+  --radius: 0.75rem;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -14,14 +28,224 @@
   }
 }
 
+/* ============================
+   BASE
+   ============================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ============================
+   SCROLLBAR PERSONALIZADA
+   ============================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bbf7d0;
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #16a34a;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #bbf7d0 #f1f5f9;
+}
+
+/* ============================
+   ANIMACIONES DE ENTRADA
+   ============================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(22, 163, 74, 0); }
+}
+
+/* ============================
+   CLASES DE ANIMACIÓN UTILITARIAS
+   ============================ */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.3s ease-out both;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.25s ease-out both;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out both;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out both;
+  }
+
+  .animate-pulse-green {
+    animation: pulse-green 2s infinite;
+  }
+
+  /* Delays para animaciones escalonadas */
+  .delay-75  { animation-delay: 75ms; }
+  .delay-100 { animation-delay: 100ms; }
+  .delay-150 { animation-delay: 150ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+}
+
+/* ============================
+   COMPONENTES GLOBALES
+   ============================ */
+
+/* Focus ring global */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
+}
+
+/* Card base */
+.card {
+  @apply bg-white rounded-2xl border border-gray-100 shadow-sm;
+}
+
+/* Badge base */
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+}
+
+/* Button primary */
+.btn-primary {
+  @apply flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium
+    hover:bg-green-700 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed;
+}
+
+/* Button secondary */
+.btn-secondary {
+  @apply flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium
+    hover:bg-gray-50 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed;
+}
+
+/* Input base */
+.input-base {
+  @apply w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm
+    focus:outline-none focus:ring-2 focus:ring-green-500
+    disabled:bg-gray-50 disabled:text-gray-500 transition-shadow;
+}
+
+/* Sidebar active indicator */
+.sidebar-active {
+  @apply bg-green-600/20 text-white;
+  border-left: 3px solid #4ade80;
+}
+
+/* Table styles */
+.table-header {
+  @apply bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wide;
+}
+
+/* Status dot */
+.status-dot-green {
+  @apply w-2 h-2 rounded-full bg-green-500 animate-pulse;
+}
+
+/* ============================
+   RECHARTS OVERRIDE
+   ============================ */
+.recharts-cartesian-axis-tick-value {
+  font-size: 11px;
+  fill: #9ca3af;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  border-radius: 10px !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+}
+
+/* ============================
+   TRANSICIONES GLOBALES
+   ============================ */
+button,
+a,
+input,
+select,
+textarea {
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* ============================
+   PRINT
+   ============================ */
+@media print {
+  .no-print { display: none !important; }
 }
