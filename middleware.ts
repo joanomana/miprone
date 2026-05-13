@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
+import { auth } from '@/lib/auth'
 
-export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+export default auth((req) => {
   const { pathname } = req.nextUrl
+  const session = req.auth
 
   const isApiAuth = pathname.startsWith('/api/auth')
   const isApiPublic = pathname.startsWith('/api/seed') || pathname.startsWith('/api/usuarios')
@@ -13,11 +12,11 @@ export async function middleware(req: NextRequest) {
 
   if (isApiAuth || isApiPublic) return NextResponse.next()
 
-  const isLoggedIn = !!token
+  const isLoggedIn = !!session
 
   if (isAuthPage) {
     if (isLoggedIn) {
-      if (!token?.onboardingCompleto) {
+      if (!session?.user?.onboardingCompleto) {
         return NextResponse.redirect(new URL('/negocio', req.url))
       }
       return NextResponse.redirect(new URL('/dashboard', req.url))
@@ -30,12 +29,12 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(`/login?callbackUrl=${callbackUrl}`, req.url))
   }
 
-  if (!token?.onboardingCompleto && !isOnboarding) {
+  if (!session?.user?.onboardingCompleto && !isOnboarding) {
     return NextResponse.redirect(new URL('/negocio', req.url))
   }
 
   return NextResponse.next()
-}
+})
 
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.png|.*\\.jpg|.*\\.svg).*)'],
